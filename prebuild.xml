@@ -33,12 +33,12 @@
     </Configuration>
 
     <Project frameworkVersion="v4_0" name="SmartThreadPool" path="CSharp/SmartThreadPool" type="Library">
-      <Configuration name="Debug">
+      <Configuration name="Release">
         <Options>
           <OutputPath>../../bin/</OutputPath>
         </Options>
       </Configuration>
-      <Configuration name="Release">
+      <Configuration name="Debug">
         <Options>
           <OutputPath>../../bin/</OutputPath>
         </Options>
@@ -49,6 +49,27 @@
       <Reference name="System.Xml"/>
       <Reference name="System.Data"/>
       <Reference name="System.Web"/>
+      <Files>
+        <Match pattern="*.cs" recurse="true"/>
+      </Files>
+    </Project>
+
+    <Project frameworkVersion="v4_0" name="C5" path="CSharp/C5" type="Library">
+      <Configuration name="Release">
+        <Options>
+          <OutputPath>../../bin/</OutputPath>
+        </Options>
+      </Configuration>
+      <Configuration name="Debug">
+        <Options>
+          <OutputPath>../../bin/</OutputPath>
+        </Options>
+      </Configuration>
+
+      <ReferencePath>../../bin/</ReferencePath>
+      <Reference name="System"/>
+      <Reference name="System.Core"/>
+      <Reference name="System.Xml"/>
       <Files>
         <Match pattern="*.cs" recurse="true"/>
       </Files>
