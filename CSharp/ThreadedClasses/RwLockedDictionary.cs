@@ -316,5 +316,54 @@ namespace ThreadedClasses
                 m_RwLock.ReleaseReaderLock();
             }
         }
+
+        /* support for non-copy enumeration */
+        public void ForEach(Action<TKey> action)
+        {
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                foreach (KeyValuePair<TKey, TValue> kvp in m_Dictionary)
+                {
+                    action(kvp.Key);
+                }
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
+
+        /* support for non-copy enumeration */
+        public void ForEach(Action<TValue> action)
+        {
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                foreach (KeyValuePair<TKey, TValue> kvp in m_Dictionary)
+                {
+                    action(kvp.Value);
+                }
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
+
+        public TKey[] GetKeyStrings()
+        {
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                TKey[] __keys = new TKey[m_Dictionary.Count];
+                m_Dictionary.Keys.CopyTo(__keys, 0);
+                return __keys;
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
     }
 }
