@@ -80,13 +80,26 @@ namespace ThreadedClasses
             }
         }
 
-        public void Remove(TKey1 key1, TKey2 key2)
+        public bool Remove(TKey1 key1, TKey2 key2)
         {
             m_RwLock.AcquireWriterLock(-1);
             try
             {
+                KeyValuePair<TKey2, TValue> kvp;
+                if(m_Dictionary_K1.TryGetValue(key1, out kvp))
+                {
+                    if(!kvp.Key.Equals(key2))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
                 m_Dictionary_K1.Remove(key1);
                 m_Dictionary_K2.Remove(key2);
+                return true;
             }
             finally
             {
@@ -94,7 +107,7 @@ namespace ThreadedClasses
             }
         }
 
-        public void Remove(TKey1 key1)
+        public bool Remove(TKey1 key1)
         {
             m_RwLock.AcquireWriterLock(-1);
             try
@@ -104,15 +117,17 @@ namespace ThreadedClasses
                 {
                     m_Dictionary_K1.Remove(key1);
                     m_Dictionary_K2.Remove(kvp.Key);
+                    return true;
                 }
             }
             finally
             {
                 m_RwLock.ReleaseWriterLock();
             }
+            return false;
         }
 
-        public void Remove(TKey2 key2)
+        public bool Remove(TKey2 key2)
         {
             m_RwLock.AcquireWriterLock(-1);
             try
@@ -122,12 +137,14 @@ namespace ThreadedClasses
                 {
                     m_Dictionary_K1.Remove(kvp.Key);
                     m_Dictionary_K2.Remove(key2);
+                    return true;
                 }
             }
             finally
             {
                 m_RwLock.ReleaseWriterLock();
             }
+            return false;
         }
 
         public void Clear()
