@@ -399,6 +399,29 @@ namespace ThreadedClasses
         {
         }
 
+        public delegate bool CheckIfRemove(TValue value);
+
+        public bool RemoveIf(TKey key, CheckIfRemove del)
+        {
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                if (m_Dictionary.ContainsKey(key))
+                {
+                    if (!del(m_Dictionary[key]))
+                    {
+                        return false;
+                    }
+                }
+                return m_Dictionary.Remove(key);
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+        }
+
+
         public new TValue this[TKey key]
         {
             get
