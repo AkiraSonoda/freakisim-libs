@@ -277,5 +277,41 @@ namespace ThreadedClasses
                 }
             }
         }
+
+        public void CopyTo(out Dictionary<TKey1, TValue> result)
+        {
+            result = new Dictionary<TKey1, TValue>();
+
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                foreach (KeyValuePair<TKey1, KeyValuePair<TKey2, TValue>> kvp in m_Dictionary_K1)
+                {
+                    result.Add(kvp.Key, kvp.Value.Value);
+                }
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
+
+        public void CopyTo(out Dictionary<TKey2, TValue> result)
+        {
+            result = new Dictionary<TKey2, TValue>();
+
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                foreach (KeyValuePair<TKey2, KeyValuePair<TKey1, TValue>> kvp in m_Dictionary_K2)
+                {
+                    result.Add(kvp.Key, kvp.Value.Value);
+                }
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
     }
 }
