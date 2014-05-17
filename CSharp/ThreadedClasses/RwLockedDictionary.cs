@@ -482,38 +482,97 @@ namespace ThreadedClasses
             }
         }
 
+        public void Remove(IEnumerable<TKey> keys)
+        {
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                foreach(TKey key in keys)
+                {
+                    m_Dictionary.Remove(key);
+                }
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+        }
+
+        public void Replace(IDictionary<TKey, TValue> dictionary)
+        {
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                m_Dictionary = new Dictionary<TKey,TValue>(dictionary);
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+        }
+
+        public delegate bool CheckReplaceDelegate(TValue value);
+
+        public bool AddOrReplaceValueIf(TKey key, TValue value, CheckReplaceDelegate del)
+        {
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                TValue checkval;
+                if(m_Dictionary.TryGetValue(key, out checkval))
+                {
+                    if(!del(checkval))
+                    {
+                        return false;
+                    }
+                }
+                m_Dictionary[key] = value;
+                return true;
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+        }
     }
 
     public class RwLockedDictionaryAutoAdd<TKey, TValue> : RwLockedDictionary<TKey, TValue>
     {
-        public RwLockedDictionaryAutoAdd()
+        private CreateValueDelegate m_AutoAddDelegate;
+        public RwLockedDictionaryAutoAdd(CreateValueDelegate autoAddDelegate)
             : base()
         {
+            m_AutoAddDelegate = autoAddDelegate;
         }
 
-        public RwLockedDictionaryAutoAdd(IDictionary<TKey, TValue> dictionary)
+        public RwLockedDictionaryAutoAdd(IDictionary<TKey, TValue> dictionary, CreateValueDelegate autoAddDelegate)
             : base(dictionary)
         {
+            m_AutoAddDelegate = autoAddDelegate;
         }
 
-        public RwLockedDictionaryAutoAdd(IEqualityComparer<TKey> comparer)
+        public RwLockedDictionaryAutoAdd(IEqualityComparer<TKey> comparer, CreateValueDelegate autoAddDelegate)
             : base(comparer)
         {
+            m_AutoAddDelegate = autoAddDelegate;
         }
 
-        public RwLockedDictionaryAutoAdd(int capacity)
+        public RwLockedDictionaryAutoAdd(int capacity, CreateValueDelegate autoAddDelegate)
             : base(capacity)
         {
+            m_AutoAddDelegate = autoAddDelegate;
         }
 
-        public RwLockedDictionaryAutoAdd(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer)
+        public RwLockedDictionaryAutoAdd(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer, CreateValueDelegate autoAddDelegate)
             : base(dictionary, comparer)
         {
+            m_AutoAddDelegate = autoAddDelegate;
         }
 
-        public RwLockedDictionaryAutoAdd(int capacity, IEqualityComparer<TKey> comparer)
+        public RwLockedDictionaryAutoAdd(int capacity, IEqualityComparer<TKey> comparer, CreateValueDelegate autoAddDelegate)
             : base(capacity, comparer)
         {
+            m_AutoAddDelegate = autoAddDelegate;
         }
 
         public new TValue this[TKey key]
@@ -530,7 +589,7 @@ namespace ThreadedClasses
                     LockCookie lc = m_RwLock.UpgradeToWriterLock(-1);
                     try
                     {
-                        return m_Dictionary[key] = default(TValue);
+                        return m_Dictionary[key] = m_AutoAddDelegate();
                     }
                     finally
                     {

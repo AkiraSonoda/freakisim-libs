@@ -237,5 +237,30 @@ namespace ThreadedClasses
                 m_RwLock.ReleaseReaderLock();
             }
         }
+
+        public class ValueAlreadyExistsException : Exception
+        {
+            public ValueAlreadyExistsException()
+            {
+
+            }
+        }
+
+        public void AddIfNotExists(T val)
+        {
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                if(m_List.Contains(val))
+                {
+                    throw new ValueAlreadyExistsException();
+                }
+                m_List.Add(val);
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+        }
     }
 }
