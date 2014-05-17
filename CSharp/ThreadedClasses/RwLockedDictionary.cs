@@ -194,6 +194,26 @@ namespace ThreadedClasses
             }
         }
 
+        public bool ContainsValue(TValue value)
+        {
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                foreach(KeyValuePair<TKey, TValue> kvp in m_Dictionary)
+                { 
+                    if(kvp.Value.Equals(value))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
+
         public bool Remove(KeyValuePair<TKey, TValue> kvp)
         {
             m_RwLock.AcquireWriterLock(-1);
