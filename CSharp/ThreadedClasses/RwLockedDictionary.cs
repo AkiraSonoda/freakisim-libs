@@ -220,7 +220,25 @@ namespace ThreadedClasses
             }
         }
 
-		public bool TryGetValue(TKey key, out TValue value)
+        public bool Remove(TKey key, out TValue val)
+        {
+            val = default(TValue);
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                if (m_Dictionary.ContainsKey(key))
+                {
+                    val = m_Dictionary[key];
+                }
+                return m_Dictionary.Remove(key);
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+        }
+
+        public bool TryGetValue(TKey key, out TValue value)
         {
 			m_RwLock.AcquireReaderLock(-1);
 			try
@@ -420,7 +438,6 @@ namespace ThreadedClasses
                 m_RwLock.ReleaseWriterLock();
             }
         }
-
 
         public new TValue this[TKey key]
         {
