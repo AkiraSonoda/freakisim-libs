@@ -27,7 +27,7 @@ using System;
 using System.Threading;
 using System.Collections.Generic;
 
-namespace ThreadingClasses
+namespace ThreadedClasses
 {
     public class RwLockedDoubleDictionary<TKey1, TKey2, TValue>
     {
