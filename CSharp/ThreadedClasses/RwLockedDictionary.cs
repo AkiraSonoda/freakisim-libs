@@ -32,8 +32,8 @@ namespace ThreadedClasses
 {
     public class RwLockedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-		private ReaderWriterLock m_RwLock = new ReaderWriterLock();
-        private Dictionary<TKey, TValue> m_Dictionary;
+		protected ReaderWriterLock m_RwLock = new ReaderWriterLock();
+        protected Dictionary<TKey, TValue> m_Dictionary;
 
         public RwLockedDictionary()
         {
@@ -363,6 +363,79 @@ namespace ThreadedClasses
             finally
             {
                 m_RwLock.ReleaseReaderLock();
+            }
+        }
+    }
+
+    public class RwLockedDictionaryAutoAdd<TKey, TValue> : RwLockedDictionary<TKey, TValue>
+    {
+        public RwLockedDictionaryAutoAdd()
+            : base()
+        {
+        }
+
+        public RwLockedDictionaryAutoAdd(IDictionary<TKey, TValue> dictionary)
+            : base(dictionary)
+        {
+        }
+
+        public RwLockedDictionaryAutoAdd(IEqualityComparer<TKey> comparer)
+            : base(comparer)
+        {
+        }
+
+        public RwLockedDictionaryAutoAdd(int capacity)
+            : base(capacity)
+        {
+        }
+
+        public RwLockedDictionaryAutoAdd(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer)
+            : base(dictionary, comparer)
+        {
+        }
+
+        public RwLockedDictionaryAutoAdd(int capacity, IEqualityComparer<TKey> comparer)
+            : base(capacity, comparer)
+        {
+        }
+
+        public new TValue this[TKey key]
+        {
+            get
+            {
+                m_RwLock.AcquireReaderLock(-1);
+                try
+                {
+                    return m_Dictionary[key];
+                }
+                catch(KeyNotFoundException)
+                {
+                    LockCookie lc = m_RwLock.UpgradeToWriterLock(-1);
+                    try
+                    {
+                        return m_Dictionary[key] = default(TValue);
+                    }
+                    finally
+                    {
+                        m_RwLock.DowngradeFromWriterLock(ref lc);
+                    }
+                }
+                finally
+                {
+                    m_RwLock.ReleaseReaderLock();
+                }
+            }
+            set
+            {
+                m_RwLock.AcquireWriterLock(-1);
+                try
+                {
+                    m_Dictionary[key] = value;
+                }
+                finally
+                {
+                    m_RwLock.ReleaseWriterLock();
+                }
             }
         }
     }
