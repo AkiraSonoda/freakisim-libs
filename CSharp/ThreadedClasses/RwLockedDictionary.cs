@@ -334,7 +334,7 @@ namespace ThreadedClasses
                 m_RwLock.AcquireReaderLock(-1);
 				try
                 {
-                    return m_Dictionary.Keys;
+                    return new List<TKey>(m_Dictionary.Keys);
                 }
 				finally
                 {
@@ -350,7 +350,7 @@ namespace ThreadedClasses
                 m_RwLock.AcquireReaderLock(-1);
                 try
                 {
-                    return m_Dictionary.Values;
+                    return new List<TValue>(m_Dictionary.Values);
                 }
                 finally
                 {
