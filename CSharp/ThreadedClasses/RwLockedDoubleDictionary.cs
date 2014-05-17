@@ -31,6 +31,14 @@ namespace ThreadedClasses
 {
     public class RwLockedDoubleDictionary<TKey1, TKey2, TValue>
     {
+        public class ChangeKeyFailedException : Exception
+        {
+            public ChangeKeyFailedException(string message)
+                : base(message)
+            {
+
+            }
+        }
         Dictionary<TKey1, KeyValuePair<TKey2, TValue>> m_Dictionary_K1;
         Dictionary<TKey2, KeyValuePair<TKey1, TValue>> m_Dictionary_K2;
         ReaderWriterLock m_RwLock = new ReaderWriterLock();
@@ -311,6 +319,50 @@ namespace ThreadedClasses
             finally
             {
                 m_RwLock.ReleaseReaderLock();
+            }
+        }
+
+        public void ChangeKey(TKey1 newKey, TKey1 oldKey)
+        {
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                if(m_Dictionary_K1.ContainsKey(newKey))
+                {
+                    throw new ChangeKeyFailedException("New key already exists: " + newKey.ToString());
+                }
+                KeyValuePair<TKey2, TValue> kvp = m_Dictionary_K1[oldKey];
+                m_Dictionary_K1.Remove(oldKey);
+
+                /* re-adjust dictionaries */
+                m_Dictionary_K2[kvp.Key] = new KeyValuePair<TKey1, TValue>(newKey, kvp.Value);
+                m_Dictionary_K1[newKey] = new KeyValuePair<TKey2, TValue>(kvp.Key, kvp.Value);
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+        }
+
+        public void ChangeKey(TKey2 newKey, TKey2 oldKey)
+        {
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                if (m_Dictionary_K2.ContainsKey(newKey))
+                {
+                    throw new ChangeKeyFailedException("New key already exists: " + newKey.ToString());
+                }
+                KeyValuePair<TKey1, TValue> kvp = m_Dictionary_K2[oldKey];
+                m_Dictionary_K2.Remove(oldKey);
+
+                /* re-adjust dictionaries */
+                m_Dictionary_K1[kvp.Key] = new KeyValuePair<TKey2, TValue>(newKey, kvp.Value);
+                m_Dictionary_K2[newKey] = new KeyValuePair<TKey1, TValue>(kvp.Key, kvp.Value);
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
             }
         }
     }
