@@ -35,6 +35,15 @@ namespace ThreadedClasses
 		protected ReaderWriterLock m_RwLock = new ReaderWriterLock();
         protected Dictionary<TKey, TValue> m_Dictionary;
 
+        public class KeyAlreadyExistsException : Exception
+        {
+            public KeyAlreadyExistsException(string message)
+                : base(message)
+            {
+
+            }
+        }
+
         public RwLockedDictionary()
         {
             m_Dictionary = new Dictionary<TKey, TValue>();
@@ -116,7 +125,25 @@ namespace ThreadedClasses
             }
         }
 
-		public void Add(TKey key, TValue value)
+        public delegate TValue CreateValueDelegate();
+        public void Add(TKey key, CreateValueDelegate del)
+        {
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                if(m_Dictionary.ContainsKey(key))
+                {
+                    throw new KeyAlreadyExistsException("Key \"" + key.ToString() + "\" already exists");
+                }
+                m_Dictionary.Add(key, del());
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+        }
+
+        public void Add(TKey key, TValue value)
         {
             m_RwLock.AcquireWriterLock(-1);
             try
