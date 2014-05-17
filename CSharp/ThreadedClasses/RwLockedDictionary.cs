@@ -143,6 +143,35 @@ namespace ThreadedClasses
             }
         }
 
+        public TValue GetOrAddIfNotExists(TKey key, CreateValueDelegate del)
+        {
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                return m_Dictionary[key];
+            }
+            catch(KeyNotFoundException)
+            {
+                LockCookie lc = m_RwLock.UpgradeToWriterLock(-1);
+                try
+                {
+                    if(m_Dictionary.ContainsKey(key))
+                    {
+                        return m_Dictionary[key];
+                    }
+                    return m_Dictionary[key] = del();
+                }
+                finally
+                {
+                    m_RwLock.DowngradeFromWriterLock(ref lc);
+                }
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
+
         public void Add(TKey key, TValue value)
         {
             m_RwLock.AcquireWriterLock(-1);
