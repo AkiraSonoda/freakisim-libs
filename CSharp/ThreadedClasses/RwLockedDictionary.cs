@@ -126,7 +126,7 @@ namespace ThreadedClasses
         }
 
         public delegate TValue CreateValueDelegate();
-        public void Add(TKey key, CreateValueDelegate del)
+        public void AddIfNotExists(TKey key, CreateValueDelegate del)
         {
             m_RwLock.AcquireWriterLock(-1);
             try
