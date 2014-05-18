@@ -398,5 +398,27 @@ namespace ThreadedClasses
                 m_RwLock.ReleaseReaderLock();
             }
         }
+
+        public List<TValue> Values
+        {
+            get
+            {
+                List<TValue> result = new List<TValue>();
+                m_RwLock.AcquireReaderLock(-1);
+                try
+                {
+                    foreach (KeyValuePair<TKey2, TValue> kvp in m_Dictionary_K1.Values)
+                    {
+                        result.Add(kvp.Value);
+                    }
+
+                    return result;
+                }
+                finally
+                {
+                    m_RwLock.ReleaseReaderLock();
+                }
+            }
+        }
     }
 }
