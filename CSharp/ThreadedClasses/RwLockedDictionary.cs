@@ -126,7 +126,7 @@ namespace ThreadedClasses
         }
 
         public delegate TValue CreateValueDelegate();
-        public void AddIfNotExists(TKey key, CreateValueDelegate del)
+        public TValue AddIfNotExists(TKey key, CreateValueDelegate del)
         {
             m_RwLock.AcquireWriterLock(-1);
             try
@@ -135,7 +135,9 @@ namespace ThreadedClasses
                 {
                     throw new KeyAlreadyExistsException("Key \"" + key.ToString() + "\" already exists");
                 }
-                m_Dictionary.Add(key, del());
+                TValue res = del();
+                m_Dictionary.Add(key, res);
+                return res;
             }
             finally
             {
