@@ -31,7 +31,7 @@ namespace ThreadedClasses
 {
     public class BlockingQueue<T> : Queue<T>
     {
-        class TimeoutException : Exception
+        public class TimeoutException : Exception
         {
             public TimeoutException()
             {
