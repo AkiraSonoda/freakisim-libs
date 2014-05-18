@@ -534,6 +534,22 @@ namespace ThreadedClasses
                 m_RwLock.ReleaseWriterLock();
             }
         }
+
+        public void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> items)
+        {
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                foreach(KeyValuePair<TKey, TValue> kvp in items)
+                {
+                    m_Dictionary.Add(kvp.Key, kvp.Value);
+                }
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+        }
     }
 
     public class RwLockedDictionaryAutoAdd<TKey, TValue> : RwLockedDictionary<TKey, TValue>
