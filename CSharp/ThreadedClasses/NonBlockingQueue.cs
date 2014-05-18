@@ -62,6 +62,20 @@ namespace ThreadedClasses
             }
         }
 
+        public bool Dequeue(out T e)
+        {
+            try
+            {
+                e = Dequeue();
+                return true;
+            }
+            catch(InvalidOperationException)
+            {
+                e = default(T);
+                return false;
+            }
+        }
+
         public new T Peek()
         {
             lock(this)
