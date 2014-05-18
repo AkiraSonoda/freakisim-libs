@@ -262,5 +262,18 @@ namespace ThreadedClasses
                 m_RwLock.ReleaseWriterLock();
             }
         }
+
+        public List<T> FindAll(Predicate<T> match)
+        {
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                return m_List.FindAll(match);
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
     }
 }
