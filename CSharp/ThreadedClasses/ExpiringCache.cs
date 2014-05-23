@@ -144,15 +144,112 @@ namespace ThreadedClasses
             }
         }
 
+        public void AddOrUpdate(TKey key, TValue value, double expirationSeconds)
+        {
+            AddOrUpdate(key, value, TimeSpan.FromSeconds(expirationSeconds));
+        }
+
+        public void AddOrUpdate(TKey key, TValue value, TimeSpan expirationTime)
+        {
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                CacheItem ci = m_Dictionary[key];
+                ci.m_Value = value;
+                /* limited locking here so we work with a ReaderLock only here */
+                lock (ci)
+                {
+                    ci.m_ExpiringDate = DateTime.UtcNow + expirationTime;
+                }
+            }
+            catch(KeyNotFoundException)
+            {
+                LockCookie lc = m_RwLock.UpgradeToWriterLock(-1);
+                try
+                {
+                    m_Dictionary[key] = new CacheItem(value, DateTime.UtcNow + expirationTime);
+                }
+                finally
+                {
+                    m_RwLock.DowngradeFromWriterLock(ref lc);
+                }
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
+
+        public delegate TValue AddValueDelegate();
+        public TValue GetOrAdd(TKey key, AddValueDelegate addDelegate, double expirationSeconds)
+        {
+            return GetOrAdd(key, addDelegate, TimeSpan.FromSeconds(expirationSeconds));
+        }
+
+        public TValue GetOrAdd(TKey key, AddValueDelegate addDelegate, TimeSpan expirationTime)
+        {
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                CacheItem ci = m_Dictionary[key];
+                return ci.m_Value;
+            }
+            catch (KeyNotFoundException)
+            {
+                LockCookie lc = m_RwLock.UpgradeToWriterLock(-1);
+                try
+                {
+                    TValue v = addDelegate();
+                    m_Dictionary[key] = new CacheItem(v, DateTime.UtcNow + expirationTime);
+                    return v;
+                }
+                finally
+                {
+                    m_RwLock.DowngradeFromWriterLock(ref lc);
+                }
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
+
+        public void Update(TKey key, TValue value, double expirationSeconds)
+        {
+            Update(key, value, TimeSpan.FromSeconds(expirationSeconds));
+        }
+        public void Update(TKey key, TValue value, TimeSpan expirationTimespan)
+        {
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                CacheItem ci = m_Dictionary[key];
+                ci.m_Value = value;
+                /* limited locking here so we work with a ReaderLock only here */
+                lock (ci)
+                {
+                    ci.m_ExpiringDate = DateTime.UtcNow + expirationTimespan;
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
+
         public void Add(TKey key, TValue value, double expirationSeconds)
+        {
+            Add(key, value, TimeSpan.FromSeconds(expirationSeconds));
+        }
+        public void Add(TKey key, TValue value, TimeSpan expirationTimespan)
         {
             m_RwLock.AcquireWriterLock(-1);
             try
             {
-                m_Dictionary.Add(key,
-                    new CacheItem(
-                        value, DateTime.UtcNow + TimeSpan.FromSeconds(expirationSeconds)
-                        ));
+                m_Dictionary[key] = new CacheItem(value, DateTime.UtcNow + expirationTimespan);
             }
             finally
             {
@@ -178,12 +275,16 @@ namespace ThreadedClasses
 
         public void Add(KeyValuePair<TKey, TValue> kvp, double expirationSeconds)
         {
+            Add(kvp, TimeSpan.FromSeconds(expirationSeconds));
+        }
+        public void Add(KeyValuePair<TKey, TValue> kvp, TimeSpan expirationTime)
+        {
             m_RwLock.AcquireWriterLock(-1);
             try
             {
                 m_Dictionary.Add(kvp.Key,
                     new CacheItem(
-                        kvp.Value, DateTime.UtcNow + TimeSpan.FromSeconds(expirationSeconds)
+                        kvp.Value, DateTime.UtcNow + expirationTime
                         ));
             }
             finally
