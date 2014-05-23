@@ -47,14 +47,21 @@ namespace ThreadedClasses
         }
         private ReaderWriterLock m_RwLock = new ReaderWriterLock();
         private Dictionary<TKey, CacheItem> m_Dictionary = new Dictionary<TKey, CacheItem>();
-        private double m_ExpirationSeconds;
+        private TimeSpan m_ExpirationTime;
 
         private object purgeLock = new object();
         const int MAX_LOCK_WAIT = 5000; // milliseconds
 
         public ExpiringCache(double expirationSeconds)
         {
-            m_ExpirationSeconds = expirationSeconds;
+            m_ExpirationTime = TimeSpan.FromSeconds(expirationSeconds);
+            timer.Elapsed += ExpireTimer;
+            timer.Start();
+        }
+
+        public ExpiringCache(TimeSpan timeSpan)
+        {
+            m_ExpirationTime = timeSpan;
             timer.Elapsed += ExpireTimer;
             timer.Start();
         }
@@ -106,7 +113,7 @@ namespace ThreadedClasses
                     /* limited locking here so we work with a ReaderLock only here */
                     lock (ci)
                     {
-                        ci.m_ExpiringDate = DateTime.UtcNow + TimeSpan.FromSeconds(m_ExpirationSeconds);
+                        ci.m_ExpiringDate = DateTime.UtcNow + m_ExpirationTime;
                     }
                 }
                 catch(KeyNotFoundException)
@@ -114,7 +121,7 @@ namespace ThreadedClasses
                     LockCookie lc = m_RwLock.UpgradeToWriterLock(-1);
                     try
                     {
-                        m_Dictionary[key] = new CacheItem(value, DateTime.UtcNow + TimeSpan.FromSeconds(m_ExpirationSeconds));
+                        m_Dictionary[key] = new CacheItem(value, DateTime.UtcNow + m_ExpirationTime);
                     }
                     finally
                     {
@@ -135,7 +142,7 @@ namespace ThreadedClasses
             {
                 m_Dictionary.Add(key, 
                     new CacheItem(
-                        value, DateTime.UtcNow + TimeSpan.FromSeconds(m_ExpirationSeconds)
+                        value, DateTime.UtcNow + m_ExpirationTime
                         ));
             }
             finally
@@ -264,7 +271,7 @@ namespace ThreadedClasses
             {
                 m_Dictionary.Add(kvp.Key,
                     new CacheItem(
-                        kvp.Value, DateTime.UtcNow + TimeSpan.FromSeconds(m_ExpirationSeconds)
+                        kvp.Value, DateTime.UtcNow + m_ExpirationTime
                         ));
             }
             finally
