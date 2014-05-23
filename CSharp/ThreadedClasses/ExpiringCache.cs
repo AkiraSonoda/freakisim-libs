@@ -203,10 +203,10 @@ namespace ThreadedClasses
             }
             catch (KeyNotFoundException)
             {
+                TValue v = addDelegate();
                 LockCookie lc = m_RwLock.UpgradeToWriterLock(-1);
                 try
                 {
-                    TValue v = addDelegate();
                     m_Dictionary[key] = new CacheItem(v, DateTime.UtcNow + expirationTime);
                     return v;
                 }
