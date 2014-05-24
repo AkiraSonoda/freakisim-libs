@@ -136,6 +136,29 @@ namespace ThreadedClasses
             }
         }
 
+        public delegate bool RemoveMatchDelegate(T val);
+
+        public T RemoveMatch(RemoveMatchDelegate del)
+        {
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                foreach(T val in m_List)
+                {
+                    if(del(val))
+                    {
+                        m_List.Remove(val);
+                        return val;
+                    }
+                }
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+            return default(T);
+        }
+
         public T this[int index]
         {
             get
