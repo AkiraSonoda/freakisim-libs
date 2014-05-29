@@ -539,7 +539,7 @@ namespace ThreadedClasses
             }
             finally
             {
-                m_RwLock.ReleaseWriterLock();
+                m_RwLock.ReleaseReaderLock();
             }
         }
 
