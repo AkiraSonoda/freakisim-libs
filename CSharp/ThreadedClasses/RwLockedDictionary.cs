@@ -484,6 +484,29 @@ namespace ThreadedClasses
             }
         }
 
+        public bool RemoveIf(TKey key, CheckIfRemove del, out KeyValuePair<TKey, TValue> kvp)
+        {
+            kvp = default(KeyValuePair<TKey, TValue>);
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                if (m_Dictionary.ContainsKey(key))
+                {
+                    TValue val = m_Dictionary[key];
+                    if (!del(val))
+                    {
+                        return false;
+                    }
+                    kvp = new KeyValuePair<TKey, TValue>(key, val);
+                }
+                return m_Dictionary.Remove(key);
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+        }
+
         public void Remove(IEnumerable<TKey> keys)
         {
             m_RwLock.AcquireWriterLock(-1);
