@@ -507,6 +507,43 @@ namespace ThreadedClasses
             }
         }
 
+        public delegate bool FindIfRemove(TKey key, TValue value);
+        public bool FindRemoveIf(FindIfRemove del, out KeyValuePair<TKey, TValue> kvpout)
+        {
+            kvpout = default(KeyValuePair<TKey, TValue>);
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                foreach(KeyValuePair<TKey, TValue> kvp in m_Dictionary)
+                {
+                    if (!del(kvp.Key, kvp.Value))
+                    {
+                        continue;
+                    }
+                    LockCookie lc = m_RwLock.UpgradeToWriterLock(-1);
+                    try
+                    {
+                        if(m_Dictionary.ContainsKey(kvp.Key))
+                        {
+                            m_Dictionary.Remove(kvp.Key);
+                            kvpout = kvp;
+                            return true;
+                        }
+                    }
+                    finally
+                    {
+                        m_RwLock.DowngradeFromWriterLock(ref lc);
+                    }
+                }
+                return false;
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+        }
+
+
         public void Remove(IEnumerable<TKey> keys)
         {
             m_RwLock.AcquireWriterLock(-1);
