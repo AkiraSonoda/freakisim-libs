@@ -484,6 +484,66 @@ namespace ThreadedClasses
             }
         }
 
+        public bool RemoveIf(TKey key, CheckIfRemove del, out KeyValuePair<TKey, TValue> kvp)
+        {
+            kvp = default(KeyValuePair<TKey, TValue>);
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                if (m_Dictionary.ContainsKey(key))
+                {
+                    TValue val = m_Dictionary[key];
+                    if (!del(val))
+                    {
+                        return false;
+                    }
+                    kvp = new KeyValuePair<TKey, TValue>(key, val);
+                }
+                return m_Dictionary.Remove(key);
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+        }
+
+        public delegate bool FindIfRemove(TKey key, TValue value);
+        public bool FindRemoveIf(FindIfRemove del, out KeyValuePair<TKey, TValue> kvpout)
+        {
+            kvpout = default(KeyValuePair<TKey, TValue>);
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                foreach(KeyValuePair<TKey, TValue> kvp in m_Dictionary)
+                {
+                    if (!del(kvp.Key, kvp.Value))
+                    {
+                        continue;
+                    }
+                    LockCookie lc = m_RwLock.UpgradeToWriterLock(-1);
+                    try
+                    {
+                        if(m_Dictionary.ContainsKey(kvp.Key))
+                        {
+                            m_Dictionary.Remove(kvp.Key);
+                            kvpout = kvp;
+                            return true;
+                        }
+                    }
+                    finally
+                    {
+                        m_RwLock.DowngradeFromWriterLock(ref lc);
+                    }
+                }
+                return false;
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
+
+
         public void Remove(IEnumerable<TKey> keys)
         {
             m_RwLock.AcquireWriterLock(-1);
