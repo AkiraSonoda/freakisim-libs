@@ -420,5 +420,35 @@ namespace ThreadedClasses
                 }
             }
         }
+
+        public List<TValue> ValuesByKey1
+        {
+            get
+            {
+                return Values;
+            }
+        }
+
+        public List<TValue> ValuesByKey2
+        {
+            get
+            {
+                List<TValue> result = new List<TValue>();
+                m_RwLock.AcquireReaderLock(-1);
+                try
+                {
+                    foreach (KeyValuePair<TKey1, TValue> kvp in m_Dictionary_K2.Values)
+                    {
+                        result.Add(kvp.Value);
+                    }
+
+                    return result;
+                }
+                finally
+                {
+                    m_RwLock.ReleaseReaderLock();
+                }
+            }
+        }
     }
 }
