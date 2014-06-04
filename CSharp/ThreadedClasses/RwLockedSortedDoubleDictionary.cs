@@ -399,6 +399,38 @@ namespace ThreadedClasses
             }
         }
 
+        public void ForEach(Action<KeyValuePair<TKey1, TValue>> d)
+        {
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                foreach (KeyValuePair<TKey1, KeyValuePair<TKey2, TValue>> kvp in m_Dictionary_K1)
+                {
+                    d(new KeyValuePair<TKey1, TValue>(kvp.Key, kvp.Value.Value));
+                }
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
+
+        public void ForEach(Action<KeyValuePair<TKey2, TValue>> d)
+        {
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                foreach (KeyValuePair<TKey2, KeyValuePair<TKey1, TValue>> kvp in m_Dictionary_K2)
+                {
+                    d(new KeyValuePair<TKey2, TValue>(kvp.Key, kvp.Value.Value));
+                }
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
+
         public List<TValue> Values
         {
             get
