@@ -356,5 +356,37 @@ namespace ThreadedClasses
                 m_RwLock.ReleaseReaderLock();
             }
         }
+
+        public List<TKey1> Keys1
+        {
+            get
+            {
+                m_RwLock.AcquireReaderLock(-1);
+                try
+                {
+                    return new List<TKey1>(m_Dictionary_K1.Keys);
+                }
+                finally
+                {
+                    m_RwLock.ReleaseReaderLock();
+                }
+            }
+        }
+
+        public List<TKey2> Keys2
+        {
+            get
+            {
+                m_RwLock.AcquireReaderLock(-1);
+                try
+                {
+                    return new List<TKey2>(m_Dictionary_K2.Keys);
+                }
+                finally
+                {
+                    m_RwLock.ReleaseReaderLock();
+                }
+            }
+        }
     }
 }
