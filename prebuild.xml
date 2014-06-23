@@ -99,7 +99,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_0" name="XMLRPC" path="CSharp/NwcXmlRpc" type="Library">
+    <Project frameworkVersion="v4_0" name="Nwc.XmlRpc" path="CSharp/NwcXmlRpc" type="Library">
       <Configuration name="Release">
         <Options>
           <OutputPath>../../bin/</OutputPath>
