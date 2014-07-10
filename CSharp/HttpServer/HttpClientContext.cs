@@ -6,6 +6,10 @@ using System.Text;
 using HttpServer.Exceptions;
 using HttpServer.Parser;
 
+// by Fumi.Iseki
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+
 namespace HttpServer
 {
     /// <summary>
@@ -92,6 +96,18 @@ namespace HttpServer
             _sock = sock;
             _buffer = new byte[bufferSize];
 
+            // by Fumi.Iseki
+            SSLCommonName = "";
+            if (secured)
+            {
+                SslStream _ssl = (SslStream)_stream;
+                X509Certificate _cert1 = _ssl.RemoteCertificate;
+                if (_cert1 != null)
+                {
+                    X509Certificate2 _cert2 = new X509Certificate2(_cert1);
+                    if (_cert2 != null) SSLCommonName = _cert2.GetNameInfo(X509NameType.SimpleName, false);
+                }
+            }
         }
 
         public bool EndWhenDone
@@ -214,6 +230,11 @@ namespace HttpServer
         /// Using SSL or other encryption method.
         /// </summary>
         public bool IsSecured { get; internal set; }
+
+        //
+        //
+        // by Fumi.Iseki
+        public string SSLCommonName { get; internal set; }
 
         /// <summary>
         /// Specify which logger to use.

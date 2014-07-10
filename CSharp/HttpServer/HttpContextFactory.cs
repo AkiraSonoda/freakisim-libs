@@ -20,6 +20,10 @@ namespace HttpServer
         private readonly ILogWriter _logWriter;
         private readonly ContextTimeoutManager _contextTimeoutManager;
 
+        // by Fumi.Iseki
+        public  static RemoteCertificateValidationCallback ClientCertificateValidationCallback = null;
+        private RemoteCertificateValidationCallback _clientCallback = null;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpContextFactory"/> class.
         /// </summary>
@@ -32,6 +36,13 @@ namespace HttpServer
             _bufferSize = bufferSize;
             _factory = factory;
             _contextTimeoutManager = new ContextTimeoutManager(ContextTimeoutManager.MonitorType.Thread);
+
+            // by Fumi.Iseki
+            if (ClientCertificateValidationCallback != null)
+            {
+                _clientCallback = ClientCertificateValidationCallback;
+                ClientCertificateValidationCallback = null;
+            }
         }
 
         ///<summary>
@@ -132,11 +143,25 @@ namespace HttpServer
 			var networkStream = new ReusableSocketNetworkStream(socket, true);
             var remoteEndPoint = (IPEndPoint) socket.RemoteEndPoint;
 
-            var sslStream = new SslStream(networkStream, false);
+            // by Fumi.Iseki
+            //var sslStream = new SslStream(networkStream, false);
+            SslStream sslStream = null;
             try
             {
                 //TODO: this may fail
-                sslStream.AuthenticateAsServer(certificate, false, protocol, false);
+                // bu Fumi.Iseki
+                //sslStream.AuthenticateAsServer(certificate, false, protocol, false);
+                if (_clientCallback == null)
+                {
+                    sslStream = new SslStream(networkStream, false);
+                    sslStream.AuthenticateAsServer(certificate, false, protocol, false);
+                }
+                else
+                {
+                    sslStream = new SslStream(networkStream, false, new RemoteCertificateValidationCallback(_clientCallback));
+                    sslStream.AuthenticateAsServer(certificate, true, protocol, false);
+                }
+
                 return CreateContext(true, remoteEndPoint, sslStream, socket);
             }
             catch (IOException err)
