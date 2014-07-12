@@ -169,6 +169,7 @@
       </Files>
     </Project>
 
+<!--
     <Project frameworkVersion="v4_0" name="Warp3D" path="CSharp/Warp3D" type="Library">
       <Configuration name="Release">
         <Options>
@@ -192,6 +193,7 @@
         <Match pattern="*.cs" recurse="true"/>
       </Files>
     </Project>
+-->
 
 <!--
     <Project frameworkVersion="v4_0" name="HttpClasses" path="CSharp/HttpClasses" type="Library">
