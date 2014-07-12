@@ -103,5 +103,13 @@ namespace ThreadedClasses
                 lock (this) return base.Count;
             }
         }
+
+        public new bool Contains(T obj)
+        {
+            lock(this)
+            {
+                return base.Contains(obj);
+            }
+        }
     }
 }

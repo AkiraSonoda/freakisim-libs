@@ -55,6 +55,7 @@ public class XmlRpcServer : IEnumerable
 	    lock (this)
 	      {
 		_myListener = new TcpListener(_port);
+        _myListener.Server.Ttl = 128;
 		_myListener.Start();
 		//start the thread which calls the method 'StartListen'
 		Thread th = new Thread(new ThreadStart(StartListen));
