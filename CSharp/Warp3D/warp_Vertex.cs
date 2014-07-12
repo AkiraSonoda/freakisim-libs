@@ -11,13 +11,13 @@ using System.Collections.Generic;
 
 namespace Rednettle.Warp3D
 {
-    /// <summary>
-    /// Summary description for warp_Vertex.
-    /// </summary>
-    public class warp_Vertex
-    {
-        public warp_Vector pos;   //(x,y,z) Coordinate of vertex
-        public warp_Vector n;   //Normal Vector at vertex
+	/// <summary>
+	/// Summary description for warp_Vertex.
+	/// </summary>
+	public class warp_Vertex
+	{
+		public warp_Vector pos;   //(x,y,z) Coordinate of vertex
+		public warp_Vector n;   //Normal Vector at vertex
         public float u; // Texture x-coordinate (relative)
         public float v; // Texture y-coordinate (relative)
 
@@ -42,9 +42,9 @@ namespace Rednettle.Warp3D
 
         internal List<warp_Triangle> neighbor;
 
-        public warp_Vertex()
-        {
-        }
+		public warp_Vertex()
+		{
+		}
 
         public warp_Vertex(warp_Vector ppos)
         {
@@ -64,19 +64,19 @@ namespace Rednettle.Warp3D
             this.v = v;
         }
 
-        public warp_Vertex(warp_Vector ppos, warp_Vector norm, float u, float v)
-        {
+		public warp_Vertex(warp_Vector ppos, warp_Vector norm, float u, float v)
+		{
             pos = ppos;
             n = norm;
-            this.u = u;
-            this.v = v;
-        }
+			this.u=u;
+			this.v=v;
+		}
 
-        public void project(warp_Matrix vertexProjection, warp_Matrix normalProjection, warp_Camera camera)
-        // Projects this vertex into camera space
-        {
-            pos2 = pos.transform(vertexProjection);
-            n2 = n.transform(normalProjection);
+		public void project(warp_Matrix vertexProjection, warp_Matrix normalProjection, warp_Camera camera)
+			// Projects this vertex into camera space
+		{
+			pos2 = pos.transform(vertexProjection);
+			n2 = n.transform(normalProjection);
 
             float fact;
             if (camera.isOrthographic)
@@ -99,24 +99,24 @@ namespace Rednettle.Warp3D
             if (parent.material.texture == null) return;
             tx = (int)((float)parent.material.texture.width * u);
             ty = (int)((float)parent.material.texture.height * v);
-        }
+		}
 
-        public void setUV(float u, float v)
-        {
-            this.u = u;
-            this.v = v;
-        }
+		public void setUV(float u, float v)
+		{
+			this.u=u;
+			this.v=v;
+		}
 
-        public void clipFrustrum(int w, int h)
-        {
-            // View plane clipping
-            clipcode = 0;
-            if (x < 0) clipcode |= 1;
-            if (x >= w) clipcode |= 2;
-            if (y < 0) clipcode |= 4;
-            if (y >= h) clipcode |= 8;
-            if (pos2.z < 0) clipcode |= 16;
-        }
+		public void clipFrustrum(int w, int h)
+		{
+			// View plane clipping
+			clipcode=0;
+			if (x<0) clipcode|=1;
+			if (x>=w) clipcode|=2;
+			if (y<0) clipcode|=4;
+			if (y>=h) clipcode|=8;
+			if (pos2.z<0) clipcode|=16;
+		}
 
         public void registerNeighbor(warp_Triangle triangle)
         {
@@ -149,37 +149,38 @@ namespace Rednettle.Warp3D
             n = new warp_Vector(nx, ny, nz).normalize();
         }
 
-        public void scaleTextureCoordinates(float fx, float fy)
-        {
-            u *= fx;
-            v *= fy;
-        }
+		public void scaleTextureCoordinates(float fx, float fy)
+		{		
+			u*=fx;
+			v*=fy;
+		}
 
-        public void moveTextureCoordinates(float fx, float fy)
-        {
-            u += fx;
-            v += fy;
-        }
+		public void moveTextureCoordinates(float fx, float fy)
+		{
+			u+=fx;
+			v+=fy;
+		}
 
-        public warp_Vertex getClone()
-        {
-            warp_Vertex newVertex = new warp_Vertex();
+		public warp_Vertex getClone()
+		{
+			warp_Vertex newVertex=new warp_Vertex();
             newVertex.pos = pos;
             newVertex.n = n;
-            newVertex.u = u;
-            newVertex.v = v;
+			newVertex.u=u;
+			newVertex.v=v;
+	
+			return newVertex;
+		}
 
-            return newVertex;
-        }
+		public bool equals(warp_Vertex v)
+		{
+			return ((pos.x==v.pos.x)&&(pos.y==v.pos.y)&&(pos.z==v.pos.z));
+		}
 
-        public bool equals(warp_Vertex v)
-        {
-            return ((pos.x == v.pos.x) && (pos.y == v.pos.y) && (pos.z == v.pos.z));
-        }
-
-        public bool equals(warp_Vertex v, float tolerance)
-        {
-            return Math.Abs(warp_Vector.sub(pos, v.pos).length()) < tolerance;
-        }
-    }
+		public bool equals(warp_Vertex v,float tolerance)
+		{
+			return Math.Abs(warp_Vector.sub(pos,v.pos).length())<tolerance;	
+		}
+	}
 }
+
