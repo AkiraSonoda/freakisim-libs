@@ -169,8 +169,7 @@
       </Files>
     </Project>
 
-<!--
-    <Project frameworkVersion="v4_0" name="Warp3D" path="CSharp/Warp3D" type="Library">
+    <Project frameworkVersion="v3_5" name="Warp3D" path="CSharp/Warp3D" type="Library">
       <Configuration name="Release">
         <Options>
           <OutputPath>../../bin/</OutputPath>
@@ -193,8 +192,56 @@
         <Match pattern="*.cs" recurse="true"/>
       </Files>
     </Project>
--->
 
+    <Project frameworkVersion="v4_0" name="PrimMesher" path="CSharp/PrimMesher" type="Library">
+      <Configuration name="Release">
+        <Options>
+          <OutputPath>../../bin/</OutputPath>
+          <AllowUnsafe>true</AllowUnsafe>
+        </Options>
+      </Configuration>
+      <Configuration name="Debug">
+        <Options>
+          <OutputPath>../../bin/</OutputPath>
+          <AllowUnsafe>true</AllowUnsafe>
+        </Options>
+      </Configuration>
+
+      <ReferencePath>../../bin/</ReferencePath>
+      <Reference name="System"/>
+      <Reference name="System.Data"/>
+      <Reference name="System.Drawing"/>
+      <Reference name="System.Xml"/>
+      <Files>
+        <Match pattern="*.cs" recurse="true"/>
+      </Files>
+    </Project>
+
+<!--
+    <Project frameworkVersion="v4_0" name="CSJ2K" path="CSharp/CSJ2K" type="Library">
+      <Configuration name="Release">
+        <Options>
+          <OutputPath>../../bin/</OutputPath>
+          <AllowUnsafe>true</AllowUnsafe>
+        </Options>
+      </Configuration>
+      <Configuration name="Debug">
+        <Options>
+          <OutputPath>../../bin/</OutputPath>
+          <AllowUnsafe>true</AllowUnsafe>
+        </Options>
+      </Configuration>
+
+      <ReferencePath>../../bin/</ReferencePath>
+      <Reference name="System"/>
+      <Reference name="System.Data"/>
+      <Reference name="System.Drawing"/>
+      <Reference name="System.Xml"/>
+      <Files>
+        <Match pattern="*.cs" recurse="true"/>
+      </Files>
+    </Project>
+-->
 <!--
     <Project frameworkVersion="v4_0" name="HttpClasses" path="CSharp/HttpClasses" type="Library">
       <Configuration name="Release">
