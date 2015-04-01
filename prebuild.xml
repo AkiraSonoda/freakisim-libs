@@ -217,6 +217,7 @@
       </Files>
     </Project>
 
+<!--
     <Project frameworkVersion="v4_0" name="CSJ2K" path="CSharp/CSJ2K" type="Library">
       <Configuration name="Release">
         <Options>
@@ -240,6 +241,7 @@
         <Match pattern="*.cs" recurse="true"/>
       </Files>
     </Project>
+-->
   </Solution>
 
 </Prebuild>
