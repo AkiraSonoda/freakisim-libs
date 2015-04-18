@@ -243,6 +243,34 @@ namespace ThreadedClasses
             }
         }
 
+        public bool TryGetValue(TKey1 key, out KeyValuePair<TKey2, TValue> value)
+        {
+            value = default(KeyValuePair<TKey2, TValue>);
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                return m_Dictionary_K1.TryGetValue(key, out value);
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
+
+        public bool TryGetValue(TKey2 key, out KeyValuePair<TKey1, TValue> value)
+        {
+            value = default(KeyValuePair<TKey1, TValue>);
+            m_RwLock.AcquireReaderLock(-1);
+            try
+            {
+                return m_Dictionary_K2.TryGetValue(key, out value);
+            }
+            finally
+            {
+                m_RwLock.ReleaseReaderLock();
+            }
+        }
+
         public TValue this[TKey1 key]
         {
             get
