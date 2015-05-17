@@ -32,7 +32,7 @@
       </Options>
     </Configuration>
 
-    <Project frameworkVersion="v4_0" name="SmartThreadPool" path="CSharp/SmartThreadPool" type="Library">
+    <Project frameworkVersion="v4_5" name="SmartThreadPool" path="CSharp/SmartThreadPool" type="Library">
       <Configuration name="Release">
         <Options>
           <OutputPath>../../bin/</OutputPath>
@@ -54,7 +54,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_0" name="C5" path="CSharp/C5" type="Library">
+    <Project frameworkVersion="v4_5" name="C5" path="CSharp/C5" type="Library">
       <Configuration name="Release">
         <Options>
           <OutputPath>../../bin/</OutputPath>
@@ -75,7 +75,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_0" name="CookComputing.XmlRpcV2" path="CSharp/XmlRpcNet" type="Library">
+    <Project frameworkVersion="v4_5" name="CookComputing.XmlRpcV2" path="CSharp/XmlRpcNet" type="Library">
       <Configuration name="Release">
         <Options>
           <OutputPath>../../bin/</OutputPath>
@@ -99,7 +99,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_0" name="Nwc.XmlRpc" path="CSharp/NwcXmlRpc" type="Library">
+    <Project frameworkVersion="v4_5" name="Nwc.XmlRpc" path="CSharp/NwcXmlRpc" type="Library">
       <Configuration name="Release">
         <Options>
           <OutputPath>../../bin/</OutputPath>
@@ -122,7 +122,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_0" name="ThreadedClasses" path="CSharp/ThreadedClasses" type="Library">
+    <Project frameworkVersion="v4_5" name="ThreadedClasses" path="CSharp/ThreadedClasses" type="Library">
       <Configuration name="Release">
         <Options>
           <OutputPath>../../bin/</OutputPath>
@@ -146,7 +146,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_0" name="HttpServer" path="CSharp/HttpServer" type="Library">
+    <Project frameworkVersion="v4_5" name="HttpServer" path="CSharp/HttpServer" type="Library">
       <Configuration name="Release">
         <Options>
           <OutputPath>../../bin/</OutputPath>
@@ -193,7 +193,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_0" name="PrimMesher" path="CSharp/PrimMesher" type="Library">
+    <Project frameworkVersion="v4_5" name="PrimMesher" path="CSharp/PrimMesher" type="Library">
       <Configuration name="Release">
         <Options>
           <OutputPath>../../bin/</OutputPath>
@@ -218,7 +218,7 @@
     </Project>
 
 <!--
-    <Project frameworkVersion="v4_0" name="CSJ2K" path="CSharp/CSJ2K" type="Library">
+    <Project frameworkVersion="v4_5" name="CSJ2K" path="CSharp/CSJ2K" type="Library">
       <Configuration name="Release">
         <Options>
           <OutputPath>../../bin/</OutputPath>
@@ -243,7 +243,7 @@
     </Project>
 -->
 <!--
-    <Project frameworkVersion="v4_0" name="HttpClasses" path="CSharp/HttpClasses" type="Library">
+    <Project frameworkVersion="v4_5" name="HttpClasses" path="CSharp/HttpClasses" type="Library">
       <Configuration name="Release">
         <Options>
           <OutputPath>../../bin/</OutputPath>
