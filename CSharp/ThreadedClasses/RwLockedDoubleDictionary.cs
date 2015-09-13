@@ -147,6 +147,50 @@ namespace ThreadedClasses
             return false;
         }
 
+        public bool Remove(TKey1 key1, out TValue val)
+        {
+            val = default(TValue);
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                KeyValuePair<TKey2, TValue> kvp;
+                if (m_Dictionary_K1.TryGetValue(key1, out kvp))
+                {
+                    m_Dictionary_K1.Remove(key1);
+                    m_Dictionary_K2.Remove(kvp.Key);
+                    val = kvp.Value;
+                    return true;
+                }
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+            return false;
+        }
+
+        public bool Remove(TKey2 key2, out TValue val)
+        {
+            val = default(TValue);
+            m_RwLock.AcquireWriterLock(-1);
+            try
+            {
+                KeyValuePair<TKey1, TValue> kvp;
+                if (m_Dictionary_K2.TryGetValue(key2, out kvp))
+                {
+                    m_Dictionary_K1.Remove(kvp.Key);
+                    m_Dictionary_K2.Remove(key2);
+                    val = kvp.Value;
+                    return true;
+                }
+            }
+            finally
+            {
+                m_RwLock.ReleaseWriterLock();
+            }
+            return false;
+        }
+
         public void Clear()
         {
             m_RwLock.AcquireWriterLock(-1);
