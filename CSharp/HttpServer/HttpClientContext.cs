@@ -146,6 +146,11 @@ namespace HttpServer
             _currentRequest.Method = e.HttpMethod;
             _currentRequest.HttpVersion = e.HttpVersion;
             _currentRequest.UriPath = e.UriPath;
+            if(e.HttpVersion == "HTTP/1.1")
+            {
+                /* HTTP/1.1 default is KeepAlive */
+                _currentRequest.Connection = ConnectionType.KeepAlive;
+            }
             FirstRequestLineReceived = true;
         }
 
