@@ -474,6 +474,7 @@ namespace HttpServer
             byte[] buffer = Encoding.ASCII.GetBytes(response);
 
             Send(buffer);
+            Flush();
             if (_currentRequest.Connection == ConnectionType.Close)
                 FullRequestProcessed = true;
             
@@ -539,6 +540,21 @@ namespace HttpServer
                 }
             }
 
+        }
+
+        public void Flush()
+        {
+            if (Stream != null && Stream.CanWrite)
+            {
+                try
+                {
+                    Stream.Flush();
+                }
+                catch (IOException)
+                {
+
+                }
+            }
         }
 
         /// <summary>
