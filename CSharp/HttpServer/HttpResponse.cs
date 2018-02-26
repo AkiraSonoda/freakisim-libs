@@ -288,6 +288,10 @@ namespace HttpServer
 		        Body.Dispose();
 		        _context.Disconnect(SocketError.Success);
 		    }
+            else
+            {
+                _context.Flush();
+            }
 
 		    Sent = true;
 		}

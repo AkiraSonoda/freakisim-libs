@@ -146,6 +146,11 @@ namespace HttpServer
             _currentRequest.Method = e.HttpMethod;
             _currentRequest.HttpVersion = e.HttpVersion;
             _currentRequest.UriPath = e.UriPath;
+            if(e.HttpVersion == "HTTP/1.1")
+            {
+                /* HTTP/1.1 default is KeepAlive */
+                _currentRequest.Connection = ConnectionType.KeepAlive;
+            }
             FirstRequestLineReceived = true;
         }
 
@@ -469,6 +474,7 @@ namespace HttpServer
             byte[] buffer = Encoding.ASCII.GetBytes(response);
 
             Send(buffer);
+            Flush();
             if (_currentRequest.Connection == ConnectionType.Close)
                 FullRequestProcessed = true;
             
@@ -534,6 +540,21 @@ namespace HttpServer
                 }
             }
 
+        }
+
+        public void Flush()
+        {
+            if (Stream != null && Stream.CanWrite)
+            {
+                try
+                {
+                    Stream.Flush();
+                }
+                catch (IOException)
+                {
+
+                }
+            }
         }
 
         /// <summary>
