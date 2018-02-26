@@ -169,7 +169,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v3_5" name="Warp3D" path="CSharp/Warp3D" type="Library">
+    <Project frameworkVersion="v4_5" name="Warp3D" path="CSharp/Warp3D" type="Library">
       <Configuration name="Release">
         <Options>
           <OutputPath>../../bin/</OutputPath>
